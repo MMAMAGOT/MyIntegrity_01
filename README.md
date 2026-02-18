@@ -29,11 +29,11 @@ npm run dev
 
 ## ライセンス
 
-<<<<<<< HEAD
+
 MIT License  
 
 Copyright (c) 2026 My Integrity Project M  
 This project is licensed under the MIT License.
-=======
-MIT
->>>>>>> 475db97 (deploy fix)
+
+
+
