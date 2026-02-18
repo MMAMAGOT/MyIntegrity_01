@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import html2canvas from "html2canvas";
 
 const VALUES_DATA = [
   { category: "行動・姿勢", icon: "⚡", values: [
@@ -211,11 +212,12 @@ function IntroScreen({ onStart }) {
       <FadeIn delay={300}>
         <h1 style={{
           fontFamily: "'Noto Serif JP', serif",
-          fontSize: "clamp(30px, 6vw, 44px)",
+          fontSize: "clamp(24px, 5.5vw, 44px)",
           fontWeight: 700,
           color: "#4a2f14",
           marginBottom: "4px",
-          letterSpacing: "0.1em",
+          letterSpacing: "0.05em",
+          padding: "0 16px",
         }}>マイインテグリティ</h1>
         <p style={{
           fontFamily: "'Noto Serif JP', serif",
@@ -248,7 +250,7 @@ function IntroScreen({ onStart }) {
             fontSize: "14px", lineHeight: 2.1,
             color: "#3a3a3a", textAlign: "left", margin: 0,
           }}>
-            <span style={{ whiteSpace: "nowrap" }}>インテグリティとは、<strong style={{ color: "#4a2f14" }}>自分の価値観に対する一貫性・真摯さ</strong>のこと。</span>
+            インテグリティとは、<strong style={{ color: "#4a2f14" }}>自分の価値観に対する一貫性・真摯さ</strong>のこと。
             <br /><br />
             このワークでは、3つのステップを通じて、
             あなたの「<strong style={{ color: "#4a2f14" }}>譲れない核となる価値観</strong>」を見つけ出します。
@@ -785,24 +787,138 @@ function Results({ finalThree, episodes, onRestart }) {
 
   const threeLabels = finalThree.map(id => ALL_VALUES.find(v => v.id === id)?.label).join("・");
 
-  const handleShare = async () => {
-    const text = `🔸 マイインテグリティ診断結果\n\n私の核となる3つの価値観：\n${finalThree.map((id, i) => {
-      const v = ALL_VALUES.find(val => val.id === id);
-      const medals = ["🥇", "🥈", "🥉"];
-      return `${medals[i]} ${v?.label}（${v?.desc}）`;
-    }).join("\n")}\n\n#マイインテグリティ #価値観 #自己理解`;
+  const [showSnsMenu, setShowSnsMenu] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "マイインテグリティ", text });
-      } catch(e) {}
-    } else {
-      try {
-        await navigator.clipboard.writeText(text);
-        setShowShareTip(true);
-        setTimeout(() => setShowShareTip(false), 2500);
-      } catch(e) {}
+  const shareText = `🔸 マイインテグリティ診断結果\n\n私の核となる3つの価値観：\n${finalThree.map((id, i) => {
+    const v = ALL_VALUES.find(val => val.id === id);
+    const medals = ["🥇", "🥈", "🥉"];
+    return `${medals[i]} ${v?.label}（${v?.desc}）`;
+  }).join("\n")}\n\n#マイインテグリティ #価値観 #自己理解`;
+
+  const shareUrl = "https://mmamagot.github.io/MyIntegrity_01/";
+
+  const generateImage = async () => {
+    if (!shareCardRef.current) return null;
+    setIsGenerating(true);
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+        logging: false,
+      });
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+      setIsGenerating(false);
+      return { canvas, blob };
+    } catch (e) {
+      setIsGenerating(false);
+      return null;
     }
+  };
+
+  const handleSaveImage = async () => {
+    const result = await generateImage();
+    if (!result) return;
+    const link = document.createElement("a");
+    link.download = "my-integrity-result.png";
+    link.href = result.canvas.toDataURL("image/png");
+    link.click();
+  };
+
+  const handleShareWithImage = async (sns) => {
+    const result = await generateImage();
+
+    // Try Web Share API with image (mobile)
+    if (result?.blob && navigator.canShare) {
+      const file = new File([result.blob], "my-integrity-result.png", { type: "image/png" });
+      const shareData = {
+        text: shareText + "\n" + shareUrl,
+        files: [file],
+      };
+      try {
+        if (navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
+        }
+      } catch (e) {}
+    }
+
+    // Fallback: open SNS share URL
+    const textWithUrl = shareText + "\n" + shareUrl;
+    const urls = {
+      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(textWithUrl)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
+      line: `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
+    };
+
+    if (urls[sns]) {
+      window.open(urls[sns], "_blank", "width=550,height=420");
+    }
+
+    // Auto-save image so user can attach
+    if (result) {
+      const link = document.createElement("a");
+      link.download = "my-integrity-result.png";
+      link.href = result.canvas.toDataURL("image/png");
+      link.click();
+    }
+  };
+
+  const handleCopyText = async () => {
+    try {
+      await navigator.clipboard.writeText(shareText + "\n" + shareUrl);
+      setShowShareTip(true);
+      setTimeout(() => setShowShareTip(false), 2500);
+    } catch(e) {}
+    setShowSnsMenu(false);
+  };
+
+  const snsOptions = [
+    {
+      name: "X (Twitter)",
+      color: "#000000",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      ),
+      action: () => handleShareWithImage("x"),
+    },
+    {
+      name: "Facebook",
+      color: "#1877F2",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+        </svg>
+      ),
+      action: () => handleShareWithImage("facebook"),
+    },
+    {
+      name: "LINE",
+      color: "#06C755",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+        </svg>
+      ),
+      action: () => handleShareWithImage("line"),
+    },
+    {
+      name: "コピー",
+      color: "#6b4423",
+      icon: (
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+      ),
+      action: handleCopyText,
+    },
+  ];
+
+  const handleShare = () => {
+    setShowSnsMenu(!showSnsMenu);
   };
 
   return (
@@ -893,44 +1009,134 @@ function Results({ finalThree, episodes, onRestart }) {
         </FadeIn>
       </div>
 
-      {/* Share button */}
+      {/* Share button & SNS menu */}
       <FadeIn delay={1800}>
         <div style={{ textAlign: "center", marginBottom: "24px", position: "relative" }}>
-          <button onClick={handleShare} style={{
-            background: "linear-gradient(135deg, #1da1f2, #0d8ecf)",
-            color: "#fff",
+          {/* Save Image Button */}
+          <button onClick={handleSaveImage} disabled={isGenerating} style={{
+            background: "linear-gradient(135deg, #5c3d1e, #7a5230)",
+            color: "#e8d5b7",
             border: "none", borderRadius: "60px",
-            padding: "13px 32px",
+            padding: "13px 28px",
+            fontSize: "13px", fontWeight: 600,
+            cursor: isGenerating ? "wait" : "pointer",
+            boxShadow: "0 4px 16px rgba(92,61,30,0.3)",
+            display: "inline-flex", alignItems: "center", gap: "8px",
+            transition: "all 0.2s",
+            marginBottom: "10px",
+            opacity: isGenerating ? 0.7 : 1,
+          }}
+          onMouseOver={e => { if (!isGenerating) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(92,61,30,0.4)"; }}}
+          onMouseOut={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 16px rgba(92,61,30,0.3)"; }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+            </svg>
+            {isGenerating ? "画像を作成中..." : "📸 結果画像を保存する"}
+          </button>
+
+          <br />
+
+          {/* Share to SNS Button */}
+          <button onClick={handleShare} style={{
+            background: "transparent",
+            color: "#6b4423",
+            border: "1.5px solid #6b4423",
+            borderRadius: "60px",
+            padding: "11px 28px",
             fontSize: "13px", fontWeight: 600,
             cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(29,161,242,0.3)",
             display: "inline-flex", alignItems: "center", gap: "8px",
             transition: "all 0.2s",
           }}
-          onMouseOver={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(29,161,242,0.4)"; }}
-          onMouseOut={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 16px rgba(29,161,242,0.3)"; }}
+          onMouseOver={e => { e.currentTarget.style.background = "rgba(107,68,35,0.06)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+          onMouseOut={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = ""; }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
             </svg>
-            結果をシェアする
+            SNSでシェアする
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{
+              transform: showSnsMenu ? "rotate(180deg)" : "rotate(0deg)",
+              transition: "transform 0.2s",
+            }}>
+              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
+            </svg>
           </button>
+
+          {/* SNS Selection Panel */}
+          {showSnsMenu && (
+            <div style={{
+              marginTop: "12px",
+              background: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(12px)",
+              borderRadius: "16px",
+              padding: "12px",
+              boxShadow: "0 8px 32px rgba(74,47,20,0.15)",
+              border: "1px solid rgba(74,47,20,0.08)",
+              animation: "snsMenuIn 0.25s ease",
+            }}>
+              <p style={{ fontSize: "11px", color: "#999", marginBottom: "10px" }}>
+                💡 画像を保存済みの場合、投稿時に添付できます
+              </p>
+              <div style={{
+                display: "flex",
+                gap: "6px",
+                justifyContent: "center",
+                flexWrap: "wrap",
+              }}>
+                {snsOptions.map((sns) => (
+                  <button
+                    key={sns.name}
+                    onClick={sns.action}
+                    disabled={isGenerating}
+                    style={{
+                      display: "flex", alignItems: "center", gap: "6px",
+                      background: "transparent",
+                      border: "1px solid rgba(74,47,20,0.1)",
+                      borderRadius: "12px",
+                      padding: "10px 14px",
+                      fontSize: "12px", fontWeight: 600,
+                      color: sns.color,
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      whiteSpace: "nowrap",
+                    }}
+                    onMouseOver={e => {
+                      e.currentTarget.style.background = `${sns.color}12`;
+                      e.currentTarget.style.borderColor = `${sns.color}30`;
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseOut={e => {
+                      e.currentTarget.style.background = "transparent";
+                      e.currentTarget.style.borderColor = "rgba(74,47,20,0.1)";
+                      e.currentTarget.style.transform = "";
+                    }}
+                  >
+                    {sns.icon}
+                    {sns.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <style>{`
+            @keyframes snsMenuIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+            @keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+          `}</style>
+
           {showShareTip && (
             <div style={{
-              position: "absolute", top: "100%", left: "50%",
+              position: "absolute", bottom: "-30px", left: "50%",
               transform: "translateX(-50%)",
-              marginTop: "8px",
               background: "#2d6a4f", color: "#fff",
               padding: "6px 16px", borderRadius: "8px",
               fontSize: "12px", fontWeight: 500,
               animation: "fadeInUp 0.3s ease",
               whiteSpace: "nowrap",
+              zIndex: 10,
             }}>✓ テキストをコピーしました</div>
           )}
-          <style>{`@keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }`}</style>
-          <p style={{ fontSize: "11px", color: "#bbb", marginTop: "8px" }}>
-            📸 上のカードをスクリーンショットしてSNSに投稿するのもおすすめ！
-          </p>
         </div>
       </FadeIn>
 
