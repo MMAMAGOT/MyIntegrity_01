@@ -1292,6 +1292,8 @@ export default function MyIntegrityApp() {
   return (
     <div style={{
       minHeight: "100vh",
+      width: "100%",
+      overflowX: "hidden",
       background: "linear-gradient(180deg, #f5ede2 0%, #f0e6d8 40%, #ecddc8 100%)",
       fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
       position: "relative",
