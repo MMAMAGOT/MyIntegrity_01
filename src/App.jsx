@@ -251,8 +251,8 @@ function IntroScreen({ onStart }) {
           <p style={{
             fontSize: "clamp(13px, 3.2vw, 15px)", lineHeight: 2.1,
             color: "#3a3a3a", textAlign: "left", margin: 0,
-            wordBreak: "keep-all",
-            overflowWrap: "break-word",
+            wordBreak: "normal",
+      　　　 overflowWrap: "anywhere",
           }}>
             インテグリティとは、
             <strong style={{ color: "#4a2f14" }}>自分の価値観に対する一貫性・真摯さ</strong>のこと。
