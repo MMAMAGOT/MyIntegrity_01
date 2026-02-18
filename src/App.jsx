@@ -254,9 +254,9 @@ function IntroScreen({ onStart }) {
             wordBreak: "normal",
       　　　 overflowWrap: "anywhere",
           }}>
-            インテグリティとは、
+            インテグリティとは、<br >
             <strong style={{ color: "#4a2f14" }}>自分の価値観に対する一貫性・真摯さ</strong>のこと。
-            <br /><br />
+            <br /><br /><br />
             このワークでは、3つのステップを通じて、あなたの「<strong style={{ color: "#4a2f14" }}>譲れない核となる価値観</strong>」を見つけ出します。
           </p>
         </div>
