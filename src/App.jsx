@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import html2canvas from "html2canvas";
 
 const VALUES_DATA = [
   { category: "行動・姿勢", icon: "⚡", values: [
@@ -84,9 +83,6 @@ function FadeIn({ children, delay = 0, className = "" }) {
   }, [delay]);
   return (
     <div className={className} style={{
-      width: "100%",
-      boxSizing: "border-box",
-      overflow: "hidden",
       opacity: visible ? 1 : 0,
       transform: visible ? "translateY(0)" : "translateY(20px)",
       transition: `opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1)`,
@@ -197,7 +193,7 @@ function FloatingParticles() {
 /* ─── Step 0: Intro ─── */
 function IntroScreen({ onStart }) {
   return (
-    <div style={{ textAlign: "center", padding: "16px 16px 20px", position: "relative", width: "100%", boxSizing: "border-box" }}>
+    <div style={{ textAlign: "center", padding: "16px 0 20px", position: "relative" }}>
       <FadeIn delay={100}>
         <img
           src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACwALADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDz+lFApa8w90XFKKSnCgBRSgUAU4LQAAUoFWbCxvL59ljZ3F03pBE0h/8AHQa3YPAfjWdQ0XhPWWB6E2rL/PFG4XS3ZzVLiuqHw78d/wDQpat/34/+vQPh546/6FLV/wDvx/8AXpWfYXPHuctg04CuqHw78c/9Cnq3/fj/AOvSj4eeOf8AoU9W/wC/P/16OV9g9pHucsBSgV1Y+HnjnH/Ip6t/35/+vQPh544/6FPVf+/P/wBeiz7Bzx7nLqKeBXT/APCvfG4H/Iqat/35/wDr1Wu/B/iqzQvdeG9WiUdSbRyB+QqWmgU4vqYYFKBUrxPG5jkRkcdVYYP5GjYRU3KGBaeAKUClxSuMAKMUtOAoA5wUuKAKcK2JACnAUYrqPhx4QuvF+uC1RmgsoMPd3AH3F7KP9o9vxPagTairsj8EeDdb8XXpg0qACGMgTXUvEUX1Pc/7I5r1s+Fvhb8N7GO88X38F9enlRd87z6RwDr+Oao/ELx9a+DbRfBPgWC3ivIEAnuCN0ViD3P9+U9cfia8jhkC30moySzXmpSnMt9dN5k7H2J+4PZcVMqkYaLVkxpzq6vRHtE3xruEiEXhLwHdC1HEct9JHYREeoU84/CsyX4r/EudsxWfgq0HpJezSEfiqYrzP7SztudizHuTk1PHOfWsXiJmiwlM9EX4l/FRjxP4C/77uP8A4inj4jfFZulx4C/77uP/AIiuBjnPrVqKfpzUvEzH9VgduvxA+K5/5b+Aj/wO4/8AiKkHj74s9pfAX/fy4/8AiK46OfpzVqKc45NL61UD6rA6oeO/i2ekvgH/AL+XH/xFPXxt8Xj/AMtvAP8A33cf/EVzkc3vViOYjvU/Wqgvq0Eb48Z/F49JvAR/4Fcf/EVNB4/+LlsQ0uieDdRXuLfU5IWP03qBWJFN71Zjm9TR9aqC+rQ7GxffFLRpoRF8S/h1qOmW54N6bdL61X382PJX60y9+GfhPxbpP9t/DvXraWF+VjE/nQMfTd95D7HNVra6kjJMcjJng4PX61i3Hh37Nqp1/wAG348Ma/1M1umLW7/2biEfKwP94AEe9aRxSlpNEPDuOtN2OJ1zR9R0TUZdP1S0ktbmP7yOOo7EHoQfUVQxXuej6rp3xY0q78MeJ9PXQ/GWlJukizu2g9J4W/5aQN3H9cGvHNd0q90XVrnS9Qi8u5t32OOx9CD3BHIPvWso21Ww6dTm0e5QxTgKUClAqDU5qnAUClFbkiorOwVFLMTgAdSewr3TVr2L4U/CZI7ZYzrV2QiZ/juXHLH1VFB/BfevNPhTp66j4802KRd0cLm4cHoQgyP1xU37RmtPfePYdJVyYdLtFyM8ebL8zH67Qg/E0m7Iyn701E4mCZhuLyvLI7mSSRzlpHY5ZmPck1ZSb3rIjl5qwkuO9czR1J2NeOb3qzHNg9an8P6HZavPDbQeMvDNtdSgbYLu5lgbcf4ctGFJ7cGu6vPgj44s7Ge7Z9JnEMTSGOG5Yu4AzhRtGTTVGbV0iXiKadmzh4ps1Zil96x4pehzVlJvesWjc2Y5verMU/vWNHNViOU1LQG3HN3BqzHP71iJOFUuxwAMk1sNbw2ty9tqeqWemzR7dy3Al7qG6ojAYzg571PK2KTS3Lkc3vVqKb3ra0T4ea1q+nxajpWqaJfWkv3JoLssrevO3r7Ua74MvvDtot1rmsaJYRMdqGW5bLn0VQuSfoK0+r1bX5TH6xSbtcz4p+OtWoZveskyW4Km2vobxCM74lcD6fOoP6VNFN71g1Y1Wuo3xba6hJFaeI/Dx8vxLoRNxYOP+W8Y5ktn9Udc4HY/Wt74lDTfHPw50f4j6MmN8CGYfxCNjgq3uj5H0JqhaXLRyK6nBUgj61d+CcUDDx78O5P+PRLj7ZZIf4YLtCcD2Dg104epvBnNiIWtUXQ8nxShakkjaN2jf76Eq31HBpAK2LOWFOUUAU8CtmSegfAeMHxZdy947Jsfi6ivOPiZdtdfErxLMxz/AMTJ4x9EVUH/AKDXpnwJ48Rah/15gf8Aj4ryLxzJ/wAV14iJ/wCgtdf+jDRLVGS/iMppJUyS1QSTPepkfIrJxNky+THLGY5EV0PBDDIr6X/ZN8ZXepaTf+D9SuHnm0lUmsZJG3MbZjjYSeuxhgezAdq+X45MHrXpv7P3iGLwv4i8ReI54Wmi0/w9LPJGpwWUTxZx74JP4Vrh5OMzDFRUqb7ln42+G/8AhFfiDeW8Meyxvf8ATLTHQKxO5R/utkfTFcckvSvpX9pDQIPEfw5j8RacRPLpgF3FInPmWzgb8e2Nr/8AATXy6knPWoxFPknp1NcJV56avujVjl6c1Yjm96yUlqzDJyOa5mjqTO8+FmhnxT44sNMdC1nAftd76eUhGF/4E21fpmrXxHlA+IOvj0v5B+temfsy6Etj4PuNenUC61iTemfvLboSsf4E72/EV5J8SpcfEbxEP+ojL/Ot6tLkox82clKr7SvJdEj0H9mS8ePXfEmlISLZ4YLxU7LISyMQO2QFz9Kz/jVdNcfEa6WU7haQxRRA9EBUMcfUtS/sxPu8beIB6abB/wCjWrN+M0m34m6svvF/6KSnUb+qxX9dSKcV9bl6f5GLHN6VZim96xkl9KsxTYrz7HebUU3Nanwxn8j49ccC+8L/ADe5iuOP0Nc3FN05rW+HL5+OukH/AKlu6/8ARwp09KiM6v8ADZzviuEQ+KNWiA4W9mA/77NZmK2vGo/4rDWf+v6X/wBCNZGK7LmUdjlFFOAp4WnKtbCO9+CHy+IL8/8AToP/AEMV4346f/iufEX/AGFrr/0Ya9j+DPy67fH/AKdR/wChivFvHZ/4rjxBn/oK3P8A6MNUtjF/GzOV6lSTFU1Y1Ir0mjRMvxyV2nw1cHT/ABxnkHwpOD/3/hrgUfjFdt8M5B/Z/jf/ALFeb/0ogoirO5NR3ifRf7K/iSLxH8MpvDWokTT6K5spEfnzLVwTET7bSyf8Br588faBL4T8Zan4flzi0mIhY/xxH5o2/FSPxzWl+z34rHhX4saa88uyw1b/AIlt1k8AucxOfpJgfRjXqX7X/hkmDS/GFvHzGfsN6QOxy0TH6Hcv4itZr2lJPqjnpv2Vdx6M8ESStfwvpdx4h8Q6doNqSJdQuFgDD+BTy7fgoY/hXNJL716D8O5W0Hwh4j8cN8k4T+xtJJ6/aJhmVx/uR/zrkhC8tTuqTajpue8fA7XbfXPFPjUaf8ulabLZ6fpyA8LBFHIoI+p3N+NeKfFCTHxK8Rj/AKiMv867v9jQjyfF4HQXFqB/3xJXnHxTkx8TvEwz/wAxOb+db4huVKLOXCx5a8l5HoX7LD7vHHiL/sGQf+jWrJ+N8m34p6wPeH/0UlX/ANk9t3jnxH/2DIP/AEa1Yvx4kx8WNZH/AFx/9FJUVF/s0fUun/vUvT/I52ObnrU8c3vWQkvvViOX3rhcTvNiKY5610Hwxfd8cdIP/UuXX/o4Vx8c3vXUfCl93xv0n/sXLn/0cKKatNEVfgZX8Z8+LdYP/T7L/wChGsgCtjxfz4r1f/r9l/8AQjWXiukxWxyyrTwuKeFpwXmtmI7L4Q/LrV6f+nYf+hivE/Hp/wCK58Qf9hW5/wDQzXtvwr+TVrw/9O4/9CFeG+PW/wCK58Qf9hW5/wDQzVR1MJfGZStT1aq4anKaqw7lpXrs/hrJ/wAS/wAcf9itN/6UQVwytXZ/DZv+Jb45Pp4Wl/8ASm3oS1FN6HOzEyROiuUbqrA8qw5BHuDX2v4Nv7X4wfAeIXrL9o1Gya0u/wDpldx/KW/77VXHsRXxEH+br3r3r9jHxZ9g8War4LuZcW+qx/brIE8CeMYkUf7yYb/gBq8O7PlfUyxUbx5l0PGbyG7sr2ewuIGF5BM0EkOOfNVtpX/vriu++Kki6JFongGB1YaDa7r4r0kvpsPMffaCq/ga9N+Jvgm20T44SfEG8ts+H7SwbXLoYwr3cWESL6vIY2x9a+c7/UbrVNUudSvpDJdXczzzMe7sST+prOcORNGtOp7Rp9vzPov9ixt0fjP/AK+LT/0CSvMvivJj4peKB/1FJv8A0KvSP2JTmPxof+m9p/6BJXl3xckP/C1vFI6f8TSb/wBCp1V+6iKg/wB/M9J/ZGbd448Sf9gyD/0a1YPx+k2/F3WxnvD/AOiUrX/Y8fd468Sj/qFwf+jTXO/tCyY+Meuj3h/9EpU1F+4iVTf+1S9P8jlI5asRy+9ZKSGp45feuJo7rmvHL05rrvhA2742aWfTw5cf+jhXBpLXa/Bls/GbSz1/4p24/wDRwoiveQqv8Nlvxb/yNOrf9fkv/oRrMArV8VjPijVT/wBPkv8A6EazQtaGK2OdCGnqnqKsCKpFirQR0Hw2GzVLo/8ATD/2YV4N4+bHjnX/APsKXH/oZr3zwKPL1C4PrDj/AMeFeAfEBv8Aiutf/wCwncf+h1rTMJ/EZKtT1aq4NOVq1sSmWQa7X4a5Ol+PPbwpLn/wKt64QNXqXwS0O91bwv8AEy7toWdYPDDQggdXaQS7frthJoitRVHZHnRfDVoeHtduvDfiHTPEtjn7Tpd2l0gH8QU/Mv0ZSw/GsgMDyO/NODcYNQtHc0aurM+pP2uPHtpeeE/D+g6PdLLBrEaarKynrb4zCD9WJP8AwCvmtJOetVZLm4mjgSeeSYW8KwQ72zsjXO1B6AZOB70I+DTqPmdyaUOSNj6d/YebdF40/wCu9p/6BLXlHxff/i7PisZ6atP/AOhV6v8AsNRSCx8Z3BB8trq1QH1Ijcn/ANCH515D8aQ0Pxf8WI4IP9qytz6HBH6GnVX7qJnRf76R6Z+xq27x54mx/wBAqD/0aa5v9ot8fGfXhnvB/wCiUrov2LFZ/HHiiUKdi6ZbqT7mViP5GuY/aYVofjVre8ECRLd19wYUH9DSmv3KKpv/AGmX9djiI5KmST0rNSSpklPrXI0d6kaiSYrvfgo+fjFpn/Yu3H/o4V5qktei/BBs/F/Sz/1Lk/8A6OrNr3kE3eDN3xSv/FS6mf8Ap7k/9CNZwWtfxImfEOon/p6k/wDQjVIR0zNbGOIfanrD7VoLb+1PWD2rW5NybwwvlXMreseP1r538fn/AIrrX8/9BOf/ANDr6Msx5DM2OoxXzt8Tomg+IevxkYzfPIPo4Vh/6FW1HqY1dzBDU4NUIan5rexnc3NGPhTyQdcvtfhl3HKWFhDKu3t8zyrz+Fe+fDb47/CfwD4Y/sDRfCfi2SKRjJczTx27SXLkYLP+8x0GABwBxXzSDSinGXLsRKHPuzu/FF78KNQ1SW68Px+M9HglYsLSSytp44s9lbzg230Bzj1rkpjEJnEDu8QY7GddrMueCRk4OO2TVQcCnK1RLU0jp1LANa+kv4U+zqdZv/EEM+47o7LTopUxnjDvMvOPasIOPWl3CkinrsfSfwx+PHww+H/hdNB0bwz4vlQytPPcTx2/mTytgFmxJgcAAAcAAVx3xX8dfC3x34gbxBDY+MdH1CVFW52WdvLHNtGAxBlBDYAGQecDivH1apFbiqc7q1jONJRfMnqfQHwe+L/wz+G+l3lvY6L4w1C7vpFe6upre3QsFBCqqiTCqMnuTkk1S+LnxJ+F/wAQ7uDU5dJ8Y6XqcMXk+fFbW8iyoCSA6mUZxk4IIPPevEEYVMj0nUdrWGqKUua+puX8mj74zo9xqU0ZB3/bbVIWB7YCO4I/KokkrOST3qaOT3rnaudSehpxy9K9M+BbZ+Lekt/1Ltx/6PryeOQ5Fes/s/xNL8TI5h0tvDxDexknOP0FYzWqNL+4zsdfhLa7fnHW5f8A9CNVVhra1OMSandSAfemc5/E1CsHtUmdzLEGe1PWH2q2AtOAHtWhJTmhIgcqOnNeE/HrT2t/E9nrCr+61G1VGI/56xfIw+u3yzX0KFB4IBrg/iJ4Y/4SDQ7nQwVW7Di406RzgCYAgKT2DqShPY7T2rSlLllqRNcyPnQGnBqjdZYppIJ4nimicpJG4wyMDggjsQRigGuuxhc2/BkcVz400G2nhjmhm1O2jkjkXcrq0qgqR3BBxivQbHRPCS32vavAsE0OoaZqZ0bTSwd7CeGGRpWlB7RFQsZP3t6t/Ca8mjkeOVJYpGjkRgyOjEMpByCCOhB70sU00MzzRTSxyurI7q5DMGBDAnuCCQfXJprQmSb6nea7N4d/4QeHxNY6ZGmo+IC1o1sYsQadJb7PtEkPvKWjK/3A0g9K09Hs/DkHhSK+1jRvtFu3hVbmd7cbZ0dtVaHz0PQyKhAAPDAbT1yPMfNlMCW5lkMMbMyRliVQtjcQOgJwM464FSC5ujD5Ju7jyvK8nZ5rbfL3b9mM427vmx0zz1pXDldrXPXdJ0630XxJ4D0dbXQdWtNWs7qaa6NjHOt5GJbgwyAuCyHaqgrwRt2npWOuorJ8K9P12SDR7fUrqW/Eix+E47hZ/LWLYAyriHG48475rzuG4uIWieG5njaHPlMkhBjznO3H3c5OcdcmrVhrGtWFq1np+t6pZ2rk74Le8kjjbIwcqpAORweOaLoOVs9C1/Tpo/EmqeDtEt/D9nY2+lmewkvtMaeXVIxbGU3KXKqSGIDMp3Ki8L2NbviHTdEF3dQxWui3kdvq2kWyW1nppgn08StGXNw+AJY3G5P4vmYcr38hg1bWYdMOlQ61qcWnMCps0u5FgIPUbAcYPcdDTRe3vnzT/bboSzALK4mbdIAVIDHOTgqpGem0egobXYOWXc7/AFLUJLTw74rNvpWhI2n+IVsLWRtJgZ4oW+1Erkrkn92mCckbag8SSaH/AMInY63p9kkV74iLPLB5WI9P8hgkqw+0kvzA/wAKfL3NcOJ5ysqNcTMsz+ZIGkJDvz8zerfMeTzyfWnCWQxJE0sjRx52KWJC5OTgdsnk4qGzSMS2r8VKr81SV6kV/es2jZM0IGZmCqMsTgfWvff2drHybXW/Ejj5LiRLS2P96KBcEj2L7vyrxHwho17r2sQadYgiWbP7zHEKD70h9lHT1JAr6i0OytdJ0O10iwj8u1tolijHfA9fc9TWE9y29LDDFuYsepOTThD7VaCc9KcE9qzEcCNYi/v05dYi/v8A615ZLqlynUNVdtcuFPQ10ezA9fXWIf79Rahd215FguA6/dP9K8hbxFdD+Fj+NMPim6X/AJZsfxo9mx6HQfEPwVD4sZtS06SK18QqoDeYwWK/AGAGY8JKBwGPDDAODyfGL+1vNNvpbDUrSezvIW2ywzIUdD7g16VD41mibL2xde4LVsN4p8M+JLWOx161trlUG2NL5Srxf9c5lIZR7Zx7VrGUoqzRnKmpao8YBpwNeqXXw88I3Q82x1HWbANyABFeRj6H5G/U1nv8M9NDfL4yKj/b0eTP6SGr54sy9nNdDzwGnZrv/wDhWtgP+Z0j/wDBPN/8XSj4bWH/AEOqf+Cab/4ujnj3Dkl2OABpwau9/wCFb2H/AEOsf/gmm/8Ai6cPhtYdvGkf/gnl/wDi6XPEfJLscCDTga74fDWw/wCh0T/wTy//ABdOHw2sD/zOafjo8v8A8XRzR7j5Zdjgg1ODV3yfDOxJ/wCRzT/wTy//ABdW7f4X6aSPN8WzuPSLSDn/AMelFS5xGoy7HnSMc1t+FfD+q+Ir/wCyaXaNMy481ydscI9ZH6KPbqewNej6Z4E8Facwku/7Q1Nh2u7hYIz/AMAi+Y/QtXb6Xd2MdtHZWscFpZRn5Le2iEcY+gHf3OTWM68Ymsacn0LXgDwtZeHNP+yWbfaLmQA3d4V2mQjoqj+FB2X8TzXZIAqgDoKx7K/gWMJGu1avxXKt0Nc3OmPlaLgp4qCN91TKaq4jz6TwrYP1gqrL4H0mX70BH0NduIx6Uvl+1a8zEeezfDnR36Cdfo9U5vhfpT9Li7X6MD/SvT/KHpSCIelHOxHk03wk09+moXi/gtU5fg1YuD/xNr0f8AU17MYR6UnkCn7SXcDxNPgrDGcw+ItRh/65oF/kacfg9dY+XxnrIH+f9qvaxAvpS+QPQUe0l3FZHiX/AApy7x/yO2tf5/4FR/wp28/6HbWv8/8AAq9uFuvpSi3HpT9pLuLlR4h/wpy9/wCh31r8v/sqUfBu8/6HfWv8/wDAq9wWAdxThbr6UvayDlR4ePg1eEf8jvrX+f8AgVOX4NXuc/8ACba1/n/gVe4eQPSlWEelP2ku4WR4mnwbu88+NdbP4/8A2VXrf4RFAPM8Va1KPRn/APr17CIR6U4RKB0qXOTKWmx5lp/wysrYgnUL2Q+rbea6Cy8JWluBiSc/Vq69Yh6U4RisnTT3NPbT7mJb6PBGBjf+dX4rNF6LV9UHpTwoFCgkS5tlZIcdqlWM+lTAD0p4AquVE3P/2Q=="
@@ -215,15 +211,11 @@ function IntroScreen({ onStart }) {
       <FadeIn delay={300}>
         <h1 style={{
           fontFamily: "'Noto Serif JP', serif",
-          fontSize: "clamp(24px, 5.5vw, 44px)",
+          fontSize: "clamp(30px, 6vw, 44px)",
           fontWeight: 700,
           color: "#4a2f14",
           marginBottom: "4px",
-          letterSpacing: "0.05em",
-          padding: "0 16px",
-          wordBreak: "break-all",
-          overflowWrap: "anywhere",
-          maxWidth: "100%",
+          letterSpacing: "0.1em",
         }}>マイインテグリティ</h1>
         <p style={{
           fontFamily: "'Noto Serif JP', serif",
@@ -247,22 +239,19 @@ function IntroScreen({ onStart }) {
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
           borderRadius: "20px",
-          padding: "28px 20px",
+          padding: "28px 24px",
           maxWidth: "460px", margin: "0 auto 32px",
           border: "1px solid rgba(255,255,255,0.5)",
           boxShadow: "0 4px 24px rgba(0,0,0,0.04)",
-          boxSizing: "border-box",
-          width: "100%",
         }}>
           <p style={{
-            fontSize: "clamp(13px, 3.2vw, 15px)", lineHeight: 2.1,
+            fontSize: "14px", lineHeight: 2.1,
             color: "#3a3a3a", textAlign: "left", margin: 0,
-            wordBreak: "break-all",
-            overflowWrap: "anywhere",
           }}>
-            インテグリティとは、<strong style={{ color: "#4a2f14" }}>自分の価値観に対する一貫性・真摯さ</strong>のこと。
+            <span style={{ whiteSpace: "nowrap" }}>インテグリティとは、<strong style={{ color: "#4a2f14" }}>自分の価値観に対する</strong><span style={{ whiteSpace: "nowrap" }}><strong style={{ color: "#4a2f14" }}>一貫性・真摯さ</strong>のこと。</span>
             <br /><br />
-            このワークでは、3つのステップを通じて、あなたの「<strong style={{ color: "#4a2f14" }}>譲れない核となる価値観</strong>」を見つけ出します。
+            このワークでは、3つのステップを通じて、
+            あなたの「<strong style={{ color: "#4a2f14" }}>譲れない核となる価値観</strong>」を見つけ出します。
           </p>
         </div>
       </FadeIn>
@@ -796,138 +785,24 @@ function Results({ finalThree, episodes, onRestart }) {
 
   const threeLabels = finalThree.map(id => ALL_VALUES.find(v => v.id === id)?.label).join("・");
 
-  const [showSnsMenu, setShowSnsMenu] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const handleShare = async () => {
+    const text = `🔸 マイインテグリティ診断結果\n\n私の核となる3つの価値観：\n${finalThree.map((id, i) => {
+      const v = ALL_VALUES.find(val => val.id === id);
+      const medals = ["🥇", "🥈", "🥉"];
+      return `${medals[i]} ${v?.label}（${v?.desc}）`;
+    }).join("\n")}\n\n#マイインテグリティ #価値観 #自己理解`;
 
-  const shareText = `🔸 マイインテグリティ診断結果\n\n私の核となる3つの価値観：\n${finalThree.map((id, i) => {
-    const v = ALL_VALUES.find(val => val.id === id);
-    const medals = ["🥇", "🥈", "🥉"];
-    return `${medals[i]} ${v?.label}（${v?.desc}）`;
-  }).join("\n")}\n\n#マイインテグリティ #価値観 #自己理解`;
-
-  const shareUrl = "https://mmamagot.github.io/MyIntegrity_01/";
-
-  const generateImage = async () => {
-    if (!shareCardRef.current) return null;
-    setIsGenerating(true);
-    try {
-      const canvas = await html2canvas(shareCardRef.current, {
-        scale: 2,
-        backgroundColor: null,
-        useCORS: true,
-        logging: false,
-      });
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-      setIsGenerating(false);
-      return { canvas, blob };
-    } catch (e) {
-      setIsGenerating(false);
-      return null;
-    }
-  };
-
-  const handleSaveImage = async () => {
-    const result = await generateImage();
-    if (!result) return;
-    const link = document.createElement("a");
-    link.download = "my-integrity-result.png";
-    link.href = result.canvas.toDataURL("image/png");
-    link.click();
-  };
-
-  const handleShareWithImage = async (sns) => {
-    const result = await generateImage();
-
-    // Try Web Share API with image (mobile)
-    if (result?.blob && navigator.canShare) {
-      const file = new File([result.blob], "my-integrity-result.png", { type: "image/png" });
-      const shareData = {
-        text: shareText + "\n" + shareUrl,
-        files: [file],
-      };
+    if (navigator.share) {
       try {
-        if (navigator.canShare(shareData)) {
-          await navigator.share(shareData);
-          return;
-        }
-      } catch (e) {}
+        await navigator.share({ title: "マイインテグリティ", text });
+      } catch(e) {}
+    } else {
+      try {
+        await navigator.clipboard.writeText(text);
+        setShowShareTip(true);
+        setTimeout(() => setShowShareTip(false), 2500);
+      } catch(e) {}
     }
-
-    // Fallback: open SNS share URL
-    const textWithUrl = shareText + "\n" + shareUrl;
-    const urls = {
-      x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(textWithUrl)}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`,
-      line: `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`,
-    };
-
-    if (urls[sns]) {
-      window.open(urls[sns], "_blank", "width=550,height=420");
-    }
-
-    // Auto-save image so user can attach
-    if (result) {
-      const link = document.createElement("a");
-      link.download = "my-integrity-result.png";
-      link.href = result.canvas.toDataURL("image/png");
-      link.click();
-    }
-  };
-
-  const handleCopyText = async () => {
-    try {
-      await navigator.clipboard.writeText(shareText + "\n" + shareUrl);
-      setShowShareTip(true);
-      setTimeout(() => setShowShareTip(false), 2500);
-    } catch(e) {}
-    setShowSnsMenu(false);
-  };
-
-  const snsOptions = [
-    {
-      name: "X (Twitter)",
-      color: "#000000",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-        </svg>
-      ),
-      action: () => handleShareWithImage("x"),
-    },
-    {
-      name: "Facebook",
-      color: "#1877F2",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-        </svg>
-      ),
-      action: () => handleShareWithImage("facebook"),
-    },
-    {
-      name: "LINE",
-      color: "#06C755",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
-        </svg>
-      ),
-      action: () => handleShareWithImage("line"),
-    },
-    {
-      name: "コピー",
-      color: "#6b4423",
-      icon: (
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
-        </svg>
-      ),
-      action: handleCopyText,
-    },
-  ];
-
-  const handleShare = () => {
-    setShowSnsMenu(!showSnsMenu);
   };
 
   return (
@@ -1018,134 +893,44 @@ function Results({ finalThree, episodes, onRestart }) {
         </FadeIn>
       </div>
 
-      {/* Share button & SNS menu */}
+      {/* Share button */}
       <FadeIn delay={1800}>
         <div style={{ textAlign: "center", marginBottom: "24px", position: "relative" }}>
-          {/* Save Image Button */}
-          <button onClick={handleSaveImage} disabled={isGenerating} style={{
-            background: "linear-gradient(135deg, #5c3d1e, #7a5230)",
-            color: "#e8d5b7",
-            border: "none", borderRadius: "60px",
-            padding: "13px 28px",
-            fontSize: "13px", fontWeight: 600,
-            cursor: isGenerating ? "wait" : "pointer",
-            boxShadow: "0 4px 16px rgba(92,61,30,0.3)",
-            display: "inline-flex", alignItems: "center", gap: "8px",
-            transition: "all 0.2s",
-            marginBottom: "10px",
-            opacity: isGenerating ? 0.7 : 1,
-          }}
-          onMouseOver={e => { if (!isGenerating) { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(92,61,30,0.4)"; }}}
-          onMouseOut={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 16px rgba(92,61,30,0.3)"; }}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-            </svg>
-            {isGenerating ? "画像を作成中..." : "📸 結果画像を保存する"}
-          </button>
-
-          <br />
-
-          {/* Share to SNS Button */}
           <button onClick={handleShare} style={{
-            background: "transparent",
-            color: "#6b4423",
-            border: "1.5px solid #6b4423",
-            borderRadius: "60px",
-            padding: "11px 28px",
+            background: "linear-gradient(135deg, #1da1f2, #0d8ecf)",
+            color: "#fff",
+            border: "none", borderRadius: "60px",
+            padding: "13px 32px",
             fontSize: "13px", fontWeight: 600,
             cursor: "pointer",
+            boxShadow: "0 4px 16px rgba(29,161,242,0.3)",
             display: "inline-flex", alignItems: "center", gap: "8px",
             transition: "all 0.2s",
           }}
-          onMouseOver={e => { e.currentTarget.style.background = "rgba(107,68,35,0.06)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-          onMouseOut={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.transform = ""; }}
+          onMouseOver={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(29,161,242,0.4)"; }}
+          onMouseOut={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 16px rgba(29,161,242,0.3)"; }}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/>
             </svg>
-            SNSでシェアする
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style={{
-              transform: showSnsMenu ? "rotate(180deg)" : "rotate(0deg)",
-              transition: "transform 0.2s",
-            }}>
-              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
-            </svg>
+            結果をシェアする
           </button>
-
-          {/* SNS Selection Panel */}
-          {showSnsMenu && (
-            <div style={{
-              marginTop: "12px",
-              background: "rgba(255,255,255,0.95)",
-              backdropFilter: "blur(12px)",
-              borderRadius: "16px",
-              padding: "12px",
-              boxShadow: "0 8px 32px rgba(74,47,20,0.15)",
-              border: "1px solid rgba(74,47,20,0.08)",
-              animation: "snsMenuIn 0.25s ease",
-            }}>
-              <p style={{ fontSize: "11px", color: "#999", marginBottom: "10px" }}>
-                💡 画像を保存済みの場合、投稿時に添付できます
-              </p>
-              <div style={{
-                display: "flex",
-                gap: "6px",
-                justifyContent: "center",
-                flexWrap: "wrap",
-              }}>
-                {snsOptions.map((sns) => (
-                  <button
-                    key={sns.name}
-                    onClick={sns.action}
-                    disabled={isGenerating}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "6px",
-                      background: "transparent",
-                      border: "1px solid rgba(74,47,20,0.1)",
-                      borderRadius: "12px",
-                      padding: "10px 14px",
-                      fontSize: "12px", fontWeight: 600,
-                      color: sns.color,
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      whiteSpace: "nowrap",
-                    }}
-                    onMouseOver={e => {
-                      e.currentTarget.style.background = `${sns.color}12`;
-                      e.currentTarget.style.borderColor = `${sns.color}30`;
-                      e.currentTarget.style.transform = "translateY(-1px)";
-                    }}
-                    onMouseOut={e => {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.borderColor = "rgba(74,47,20,0.1)";
-                      e.currentTarget.style.transform = "";
-                    }}
-                  >
-                    {sns.icon}
-                    {sns.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <style>{`
-            @keyframes snsMenuIn { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
-            @keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
-          `}</style>
-
           {showShareTip && (
             <div style={{
-              position: "absolute", bottom: "-30px", left: "50%",
+              position: "absolute", top: "100%", left: "50%",
               transform: "translateX(-50%)",
+              marginTop: "8px",
               background: "#2d6a4f", color: "#fff",
               padding: "6px 16px", borderRadius: "8px",
               fontSize: "12px", fontWeight: 500,
               animation: "fadeInUp 0.3s ease",
               whiteSpace: "nowrap",
-              zIndex: 10,
             }}>✓ テキストをコピーしました</div>
           )}
+          <style>{`@keyframes fadeInUp { from{opacity:0;transform:translateX(-50%) translateY(4px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }`}</style>
+          <p style={{ fontSize: "11px", color: "#bbb", marginTop: "8px" }}>
+            📸 上のカードをスクリーンショットしてSNSに投稿するのもおすすめ！
+          </p>
         </div>
       </FadeIn>
 
@@ -1297,8 +1082,6 @@ export default function MyIntegrityApp() {
   return (
     <div style={{
       minHeight: "100vh",
-      width: "100%",
-      overflowX: "hidden",
       background: "linear-gradient(180deg, #f5ede2 0%, #f0e6d8 40%, #ecddc8 100%)",
       fontFamily: "'Noto Sans JP', 'Hiragino Kaku Gothic ProN', sans-serif",
       position: "relative",
@@ -1313,8 +1096,6 @@ export default function MyIntegrityApp() {
         minHeight: "100vh",
         position: "relative",
         zIndex: 1,
-        overflowX: "hidden",
-        boxSizing: "border-box",
       }}>
         {step > 0 && step < 4 && <StepIndicator currentStep={step} />}
 
